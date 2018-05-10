@@ -1,5 +1,6 @@
 """Test management commands."""
 from datetime import date
+from decimal import Decimal
 from io import StringIO
 
 from django.core.management import call_command
@@ -70,15 +71,12 @@ class TestImportPayments(TestCase):
             'Payment ID PAYMENT_2 has been imported.',
         ])
 
-        payment1 = BankPayment.objects.get(identifier='PAYMENT_1')
-        self.assertEqual(payment1.account, self.account)
-        self.assertEqual(payment1.transaction_date, date(2018, 5, 9))
-        self.assertEqual(payment1.amount, Money('42.00', 'CZK'))
-
-        payment2 = BankPayment.objects.get(identifier='PAYMENT_2')
-        self.assertEqual(payment2.account, self.account)
-        self.assertEqual(payment2.transaction_date, date(2018, 5, 9))
-        self.assertEqual(payment2.amount, Money('370.00', 'CZK'))
+        self.assertQuerysetEqual(BankPayment.objects.values_list(
+            'identifier', 'account', 'counter_account_number', 'transaction_date', 'amount', 'amount_currency'
+        ), [
+            ('PAYMENT_1', self.account.pk, '098765/4321', date(2018, 5, 9), Decimal('42.00'), 'CZK'),
+            ('PAYMENT_2', self.account.pk, '098765/4321', date(2018, 5, 9), Decimal('370.00'), 'CZK'),
+        ], transform=tuple, ordered=False)
 
     def test_account_not_exist(self):
         """Test command while account does not exist."""
