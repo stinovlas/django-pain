@@ -23,10 +23,10 @@ def none_to_str(value):
 class TransprocXMLParser(CzechSlovakBankStatementParser):
     """Transproc XML parser."""
 
-    def parse(self, input_handle):
+    def parse(self, bank_statement):
         """Parse XML input."""
         payments_parts = []
-        tree = etree.parse(input_handle)
+        tree = etree.parse(bank_statement)
 
         account_number = self.compose_account_number(tree.find('//*/account_number').text,
                                                      tree.find('//*/account_bank_code').text)

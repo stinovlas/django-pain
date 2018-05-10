@@ -1,9 +1,11 @@
 """Base bank statement parser module."""
+from abc import ABC, abstractmethod
 
 
-class BaseBankStatementParser(object):
+class AbstractBankStatementParser(ABC):
     """Bank statement parser."""
 
+    @abstractmethod
     def parse(self, bank_statement):
         """
         Parse bank statement.
@@ -18,4 +20,3 @@ class BaseBankStatementParser(object):
         If bank account does not exist in database, parser should raise
         BankAccount.DoesNotExist exception.
         """
-        raise NotImplementedError

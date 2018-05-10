@@ -1,8 +1,8 @@
 """Module providing Czech and Slovak parser specifics."""
-from django_pain.parsers import BaseBankStatementParser
+from django_pain.parsers import AbstractBankStatementParser
 
 
-class CzechSlovakBankStatementParser(BaseBankStatementParser):
+class CzechSlovakBankStatementParser(AbstractBankStatementParser):
     """Abstract parser class providing Czech and Slovak specifics."""
 
     @staticmethod

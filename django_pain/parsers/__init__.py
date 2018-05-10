@@ -1,4 +1,4 @@
 """Parsers module."""
-from .common import BaseBankStatementParser
+from .common import AbstractBankStatementParser
 
-__all__ = ['BaseBankStatementParser']
+__all__ = ['AbstractBankStatementParser']

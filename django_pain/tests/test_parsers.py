@@ -7,25 +7,22 @@ from djmoney.money import Money
 
 from django_pain.models import BankAccount, BankPayment
 from django_pain.models.symbols import PaymentSymbols
-from django_pain.parsers import BaseBankStatementParser
 from django_pain.parsers.czechslovak import CzechSlovakBankStatementParser
 from django_pain.parsers.transproc import TransprocXMLParser
 
 
-class TestBaseBankStatementParser(SimpleTestCase):
-    """Test BaseBankStatementParser."""
+class DummyParser(CzechSlovakBankStatementParser):
+    """Dummy parser derived from abstract class."""
 
-    def test_parse_not_implemented(self):
-        parser = BaseBankStatementParser()
-        with self.assertRaises(NotImplementedError):
-            parser.parse(None)
+    def parse(self, bank_statement):
+        pass
 
 
 class TestCzechSlovakBankStatementParser(SimpleTestCase):
     """Test CzechSlovakBankStatementParser."""
 
     def test_compose_account_number(self):
-        parser = CzechSlovakBankStatementParser()
+        parser = DummyParser()
         self.assertEqual(parser.compose_account_number('123456', '0300'), '123456/0300')
 
 
