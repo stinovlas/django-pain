@@ -8,7 +8,7 @@ from django.test import TestCase
 from djmoney.money import Money
 
 from django_pain.models import BankAccount, BankPayment, PaymentSymbols
-from django_pain.parsers import BaseBankStatementParser
+from django_pain.parsers import AbstractBankStatementParser
 
 
 def get_payment(**kwargs):
@@ -24,7 +24,7 @@ def get_payment(**kwargs):
     return BankPayment(**default)
 
 
-class DummyPaymentsParser(BaseBankStatementParser):
+class DummyPaymentsParser(AbstractBankStatementParser):
     """Simple parser that just returns two fixed payments."""
 
     def parse(self, bank_statement):
@@ -35,14 +35,14 @@ class DummyPaymentsParser(BaseBankStatementParser):
         ]
 
 
-class DummyExceptionParser(BaseBankStatementParser):
+class DummyExceptionParser(AbstractBankStatementParser):
     """Simple parser that just throws account not exist exception."""
 
     def parse(self, bank_statement):
         raise BankAccount.DoesNotExist('Bank account ACCOUNT does not exist.')
 
 
-class DummyPaymentsSymbolsParser(BaseBankStatementParser):
+class DummyPaymentsSymbolsParser(AbstractBankStatementParser):
     """Simple parser that just returns fixed payment with symbols."""
 
     def parse(self, bank_statement):
