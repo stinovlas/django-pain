@@ -2,9 +2,9 @@
 import importlib
 import sys
 
+from django.core.exceptions import ValidationError
 from django.core.management.base import BaseCommand
 from django.db import transaction
-from django.db.utils import IntegrityError
 
 from django_pain.models import BankAccount
 
@@ -47,6 +47,7 @@ class Command(BaseCommand):
                         payment = payment_parts
                         payment_related_objects = ()
 
+                    payment.full_clean()
                     payment.save()
                     for rel in payment_related_objects:
                         for field in [f.name for f in rel._meta.get_fields()]:
@@ -54,8 +55,10 @@ class Command(BaseCommand):
                             # into database. Therefore we need to do that manually.
                             # See https://code.djangoproject.com/ticket/8892
                             setattr(rel, field, getattr(rel, field))
+                        rel.full_clean()
                         rel.save()
-            except IntegrityError as e:
-                self.stderr.write(self.style.WARNING('Payment ID %s had already been imported.' % payment.identifier))
+            except ValidationError as e:
+                for message in e.messages:
+                    self.stderr.write(self.style.WARNING(message))
             else:
                 self.stdout.write(self.style.SUCCESS('Payment ID %s has been imported.' % payment.identifier))

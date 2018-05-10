@@ -1,3 +1,4 @@
+"""Test management commands."""
 from datetime import date
 from io import StringIO
 
@@ -10,6 +11,7 @@ from django_pain.parsers import BaseBankStatementParser
 
 
 def get_payment(**kwargs):
+    """Create payment object."""
     default = {
         'identifier': 'PAYMENT1',
         'account': None,
@@ -22,6 +24,7 @@ def get_payment(**kwargs):
 
 
 class DummyPaymentsParser(BaseBankStatementParser):
+    """Simple parser that just returns two fixed payments."""
 
     def parse(self, bank_statement):
         account = BankAccount.objects.get(account_number='123456/7890')
@@ -32,12 +35,14 @@ class DummyPaymentsParser(BaseBankStatementParser):
 
 
 class DummyExceptionParser(BaseBankStatementParser):
+    """Simple parser that just throws account not exist exception."""
 
     def parse(self, bank_statement):
         raise BankAccount.DoesNotExist('Bank account ACCOUNT does not exist.')
 
 
 class DummyPaymentsSymbolsParser(BaseBankStatementParser):
+    """Simple parser that just returns fixed payment with symbols."""
 
     def parse(self, bank_statement):
         account = BankAccount.objects.get(account_number='123456/7890')
@@ -48,6 +53,7 @@ class DummyPaymentsSymbolsParser(BaseBankStatementParser):
 
 
 class TestImportPayments(TestCase):
+    """Test import_payments command."""
 
     def setUp(self):
         account = BankAccount(account_number='123456/7890', currency='CZK')
@@ -55,6 +61,7 @@ class TestImportPayments(TestCase):
         self.account = account
 
     def test_import_payments(self):
+        """Test import_payments command."""
         out = StringIO()
         call_command('import_payments', 'django_pain.tests.test_commands.DummyPaymentsParser', '--no-color', stdout=out)
 
@@ -74,6 +81,7 @@ class TestImportPayments(TestCase):
         self.assertEqual(payment2.amount, Money('370.00', 'CZK'))
 
     def test_account_not_exist(self):
+        """Test command while account does not exist."""
         err = StringIO()
         with self.assertRaises(SystemExit):
             call_command('import_payments', 'django_pain.tests.test_commands.DummyExceptionParser', '--no-color',
@@ -82,6 +90,7 @@ class TestImportPayments(TestCase):
         self.assertEqual(err.getvalue().strip(), 'Bank account ACCOUNT does not exist.')
 
     def test_import_payments_with_symbols(self):
+        """Test command for parser that returns payment related objects."""
         out = StringIO()
         call_command('import_payments', 'django_pain.tests.test_commands.DummyPaymentsSymbolsParser', '--no-color',
                      stdout=out)
@@ -89,12 +98,13 @@ class TestImportPayments(TestCase):
         self.assertEqual(out.getvalue().strip(), 'Payment ID PAYMENT_1 has been imported.')
 
     def test_payment_already_exist(self):
+        """Test command for payments that already exist in database."""
         out = StringIO()
         err = StringIO()
         call_command('import_payments', 'django_pain.tests.test_commands.DummyPaymentsParser', '--no-color', stdout=out)
         call_command('import_payments', 'django_pain.tests.test_commands.DummyPaymentsParser', '--no-color', stderr=err)
 
         self.assertEqual(err.getvalue().strip().split('\n'), [
-            'Payment ID PAYMENT_1 had already been imported.',
-            'Payment ID PAYMENT_2 had already been imported.',
+            'Bank payment with this Payment ID and Account already exists.',
+            'Bank payment with this Payment ID and Account already exists.',
         ])
