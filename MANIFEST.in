@@ -1,4 +1,3 @@
 include LICENSE
 include README.rst
-include setup.cfg
 recursive-include django_pain/locale *
