@@ -57,8 +57,8 @@ class Command(BaseCommand):
                             setattr(rel, field, getattr(rel, field))
                         rel.full_clean()
                         rel.save()
-            except ValidationError as e:
-                for message in e.messages:
+            except ValidationError as error:
+                for message in error.messages:
                     self.stderr.write(self.style.WARNING(message))
             else:
                 self.stdout.write(self.style.SUCCESS('Payment ID %s has been imported.' % payment.identifier))
