@@ -68,7 +68,7 @@ class TestTransprocXMLParser(TestCase):
         account = BankAccount(account_number='123456789/0123', currency='CZK')
         account.save()
         parser = TransprocXMLParser()
-        payments = parser.parse(BytesIO(self.XML_INPUT))
+        payments = list(parser.parse(BytesIO(self.XML_INPUT)))
 
         payment1 = {
             'identifier': '111',
@@ -119,4 +119,5 @@ class TestTransprocXMLParser(TestCase):
         """Parser should raise an exception if bank account does not exist."""
         parser = TransprocXMLParser()
         with self.assertRaisesRegex(BankAccount.DoesNotExist, 'Bank account 123456789/0123 does not exist.'):
-            parser.parse(BytesIO(self.XML_INPUT))
+            output = parser.parse(BytesIO(self.XML_INPUT))
+            next(output)

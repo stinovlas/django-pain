@@ -25,7 +25,6 @@ class TransprocXMLParser(CzechSlovakBankStatementParser):
 
     def parse(self, bank_statement):
         """Parse XML input."""
-        payments_parts = []
         tree = etree.parse(bank_statement)
 
         account_number = self.compose_account_number(tree.find('//*/account_number').text,
@@ -54,6 +53,4 @@ class TransprocXMLParser(CzechSlovakBankStatementParser):
                 specific_symbol=none_to_str(attrs['spec_symbol']),
             )
 
-            payments_parts.append((payment, symbols))
-
-        return payments_parts
+            yield (payment, symbols)
