@@ -2,6 +2,7 @@
 from datetime import date
 from decimal import Decimal
 from io import StringIO
+from typing import Any, List, Tuple
 
 from django.core.management import call_command
 from django.test import TestCase
@@ -11,7 +12,7 @@ from django_pain.models import BankAccount, BankPayment, PaymentSymbols
 from django_pain.parsers import AbstractBankStatementParser
 
 
-def get_payment(**kwargs):
+def get_payment(**kwargs: Any) -> BankPayment:
     """Create payment object."""
     default = {
         'identifier': 'PAYMENT1',
@@ -27,7 +28,7 @@ def get_payment(**kwargs):
 class DummyPaymentsParser(AbstractBankStatementParser):
     """Simple parser that just returns two fixed payments."""
 
-    def parse(self, bank_statement):
+    def parse(self, bank_statement) -> List[BankPayment]:
         account = BankAccount.objects.get(account_number='123456/7890')
         return [
             get_payment(identifier='PAYMENT_1', account=account),
@@ -45,7 +46,7 @@ class DummyExceptionParser(AbstractBankStatementParser):
 class DummyPaymentsSymbolsParser(AbstractBankStatementParser):
     """Simple parser that just returns fixed payment with symbols."""
 
-    def parse(self, bank_statement):
+    def parse(self, bank_statement) -> List[Tuple[BankPayment, PaymentSymbols]]:
         account = BankAccount.objects.get(account_number='123456/7890')
         payment = get_payment(identifier='PAYMENT_1', account=account)
         return [

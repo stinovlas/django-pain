@@ -8,6 +8,7 @@ from django.core.management.base import BaseCommand
 from django.db import transaction
 
 from django_pain.models import BankAccount
+from django_pain.parsers import AbstractBankStatementParser
 
 
 class Command(BaseCommand):
@@ -20,7 +21,7 @@ class Command(BaseCommand):
         parser.add_argument('parser', type=str, help='dotted path to parser class')
 
     @staticmethod
-    def get_parser(parser_path):
+    def get_parser(parser_path: str) -> AbstractBankStatementParser:
         """Get parser instance from parser path argument."""
         module_name, class_name = parser_path.rsplit('.', 1)
 
