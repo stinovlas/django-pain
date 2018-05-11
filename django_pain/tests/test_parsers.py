@@ -15,7 +15,7 @@ class DummyParser(CzechSlovakBankStatementParser):
     """Dummy parser derived from abstract class."""
 
     def parse(self, bank_statement):
-        pass
+        """Just a dummy implementation, because DummyParser cannot be abstract."""
 
 
 class TestCzechSlovakBankStatementParser(SimpleTestCase):
