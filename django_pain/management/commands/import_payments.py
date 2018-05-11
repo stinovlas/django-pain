@@ -1,6 +1,7 @@
 """Command for importing payments from bank."""
 import importlib
 import sys
+from typing import Sequence
 
 from django.core.exceptions import ValidationError
 from django.core.management.base import BaseCommand
@@ -40,7 +41,7 @@ class Command(BaseCommand):
         for payment_parts in payments:
             try:
                 with transaction.atomic():
-                    if type(payment_parts) is tuple:
+                    if isinstance(payment_parts, Sequence):
                         payment = payment_parts[0]
                         payment_related_objects = payment_parts[1:]
                     else:
