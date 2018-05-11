@@ -99,8 +99,8 @@ class TestTransprocXMLParser(TestCase):
             'specific_symbol': '600',
         }
 
-        self.assertIsInstance(payments[0], tuple)
-        self.assertIsInstance(payments[1], tuple)
+        self.assertEqual(len(payments[0]), 2)
+        self.assertEqual(len(payments[1]), 2)
         self.assertIsInstance(payments[0][0], BankPayment)
         self.assertIsInstance(payments[1][0], BankPayment)
         self.assertIsInstance(payments[0][1], PaymentSymbols)
