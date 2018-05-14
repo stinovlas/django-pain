@@ -10,11 +10,11 @@ class AbstractBankStatementParser(ABC):
         """
         Parse bank statement.
 
-        Each parser class has to implement this method. Result is either list
-        of BankPayment objects or list of tuples.
+        Each parser class has to implement this method. Result is either iterator
+        returning BankPayment objects or iterator returning sequence.
 
-        If result is list of tuples, first element of each tuple has to be
-        BankPayment object. Other elements (if any) should be other payment
+        If result is iterator of sequences, first element of each sequence has to
+        be BankPayment object. Other elements (if any) should be other payment
         related objects such as PaymentSymbols.
 
         If bank account does not exist in database, parser should raise
