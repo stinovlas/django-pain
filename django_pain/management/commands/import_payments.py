@@ -1,11 +1,11 @@
 """Command for importing payments from bank."""
-import importlib
 import sys
 from typing import Sequence
 
 from django.core.exceptions import ValidationError
 from django.core.management.base import BaseCommand, CommandError
 from django.db import transaction
+from django.utils import module_loading
 
 from django_pain.models import BankAccount
 
@@ -20,18 +20,9 @@ class Command(BaseCommand):
         parser.add_argument('-p', '--parser', type=str, required=True, help='dotted path to parser class')
         parser.add_argument('input_file', nargs='*', type=str, help='input file with bank statement')
 
-    @staticmethod
-    def get_parser(parser_path):
-        """Get parser instance from parser path argument."""
-        module_name, class_name = parser_path.rsplit('.', 1)
-
-        parser_module = importlib.import_module(module_name)
-        parser_class = getattr(parser_module, class_name)
-        return parser_class()
-
     def handle(self, *args, **options):
         """Run command."""
-        parser = self.get_parser(options['parser'])
+        parser = module_loading.import_string(options['parser'])()
 
         input_files = options['input_file']
         if not input_files:
