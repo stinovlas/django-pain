@@ -4,7 +4,7 @@ import sys
 from typing import Sequence
 
 from django.core.exceptions import ValidationError
-from django.core.management.base import BaseCommand
+from django.core.management.base import BaseCommand, CommandError
 from django.db import transaction
 
 from django_pain.models import BankAccount
@@ -35,8 +35,7 @@ class Command(BaseCommand):
         try:
             payments = parser.parse(sys.stdin)
         except BankAccount.DoesNotExist as e:
-            self.stderr.write(self.style.ERROR(str(e)))
-            sys.exit(1)
+            raise CommandError(e)
 
         for payment_parts in payments:
             try:

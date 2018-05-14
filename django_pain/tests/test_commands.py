@@ -4,6 +4,7 @@ from decimal import Decimal
 from io import StringIO
 
 from django.core.management import call_command
+from django.core.management.base import CommandError
 from django.test import TestCase
 from djmoney.money import Money
 
@@ -80,12 +81,10 @@ class TestImportPayments(TestCase):
 
     def test_account_not_exist(self):
         """Test command while account does not exist."""
-        err = StringIO()
-        with self.assertRaises(SystemExit):
-            call_command('import_payments', 'django_pain.tests.test_commands.DummyExceptionParser', '--no-color',
-                         stderr=err)
+        with self.assertRaises(CommandError) as cm:
+            call_command('import_payments', 'django_pain.tests.test_commands.DummyExceptionParser', '--no-color')
 
-        self.assertEqual(err.getvalue().strip(), 'Bank account ACCOUNT does not exist.')
+        self.assertEqual(str(cm.exception), 'Bank account ACCOUNT does not exist.')
 
     def test_import_payments_with_symbols(self):
         """Test command for parser that returns payment related objects."""
