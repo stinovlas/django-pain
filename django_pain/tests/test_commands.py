@@ -7,6 +7,7 @@ from django.core.management import call_command
 from django.core.management.base import CommandError
 from django.test import TestCase
 from djmoney.money import Money
+from testfixtures import TempDirectory
 
 from django_pain.models import BankAccount, BankPayment, PaymentSymbols
 from django_pain.parsers import AbstractBankStatementParser
@@ -65,7 +66,7 @@ class TestImportPayments(TestCase):
     def test_import_payments(self):
         """Test import_payments command."""
         out = StringIO()
-        call_command('import_payments', 'django_pain.tests.test_commands.DummyPaymentsParser', '--no-color',
+        call_command('import_payments', '--parser=django_pain.tests.test_commands.DummyPaymentsParser', '--no-color',
                      '--verbosity=3', stdout=out)
 
         self.assertEqual(out.getvalue().strip().split('\n'), [
@@ -83,15 +84,16 @@ class TestImportPayments(TestCase):
     def test_account_not_exist(self):
         """Test command while account does not exist."""
         with self.assertRaises(CommandError) as cm:
-            call_command('import_payments', 'django_pain.tests.test_commands.DummyExceptionParser', '--no-color')
+            call_command('import_payments', '--parser=django_pain.tests.test_commands.DummyExceptionParser',
+                         '--no-color')
 
         self.assertEqual(str(cm.exception), 'Bank account ACCOUNT does not exist.')
 
     def test_import_payments_with_symbols(self):
         """Test command for parser that returns payment related objects."""
         out = StringIO()
-        call_command('import_payments', 'django_pain.tests.test_commands.DummyPaymentsSymbolsParser', '--no-color',
-                     '--verbosity=3', stdout=out)
+        call_command('import_payments', '--parser=django_pain.tests.test_commands.DummyPaymentsSymbolsParser',
+                     '--no-color', '--verbosity=3', stdout=out)
 
         self.assertEqual(out.getvalue().strip(), 'Payment ID PAYMENT_1 has been imported.')
 
@@ -99,8 +101,10 @@ class TestImportPayments(TestCase):
         """Test command for payments that already exist in database."""
         out = StringIO()
         err = StringIO()
-        call_command('import_payments', 'django_pain.tests.test_commands.DummyPaymentsParser', '--no-color', stdout=out)
-        call_command('import_payments', 'django_pain.tests.test_commands.DummyPaymentsParser', '--no-color', stderr=err)
+        call_command('import_payments', '--parser=django_pain.tests.test_commands.DummyPaymentsParser',
+                     '--no-color', stdout=out)
+        call_command('import_payments', '--parser=django_pain.tests.test_commands.DummyPaymentsParser',
+                     '--no-color', stderr=err)
 
         self.assertEqual(err.getvalue().strip().split('\n'), [
             'Bank payment with this Payment ID and Account already exists.',
@@ -111,10 +115,23 @@ class TestImportPayments(TestCase):
         """Test command call with verbosity set to 0."""
         out = StringIO()
         err = StringIO()
-        call_command('import_payments', 'django_pain.tests.test_commands.DummyPaymentsParser', '--no-color',
-                     '--verbosity=0', stdout=out, stderr=err)
-        call_command('import_payments', 'django_pain.tests.test_commands.DummyPaymentsParser', '--no-color',
-                     '--verbosity=0', stdout=out, stderr=err)
+        call_command('import_payments', '--parser=django_pain.tests.test_commands.DummyPaymentsParser',
+                     '--no-color', '--verbosity=0', stdout=out, stderr=err)
+        call_command('import_payments', '--parser=django_pain.tests.test_commands.DummyPaymentsParser',
+                     '--no-color', '--verbosity=0', stdout=out, stderr=err)
+
+        self.assertEqual(out.getvalue(), '')
+        self.assertEqual(err.getvalue(), '')
+
+    def test_input_from_files(self):
+        """Test command call with input files."""
+        out = StringIO()
+        err = StringIO()
+        with TempDirectory() as d:
+            d.write('input_file.xml', b'<whatever></whatever>')
+            call_command('import_payments', '--parser=django_pain.tests.test_commands.DummyPaymentsParser',
+                         '--no-color', '--verbosity=0', '-', '/'.join([d.path, 'input_file.xml']),
+                         stdout=out, stderr=err)
 
         self.assertEqual(out.getvalue(), '')
         self.assertEqual(err.getvalue(), '')

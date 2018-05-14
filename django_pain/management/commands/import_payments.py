@@ -17,7 +17,8 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         """Command takes one argument - dotted path to parser class."""
-        parser.add_argument('parser', type=str, help='dotted path to parser class')
+        parser.add_argument('-p', '--parser', type=str, required=True, help='dotted path to parser class')
+        parser.add_argument('input_file', nargs='*', type=str, help='input file with bank statement')
 
     @staticmethod
     def get_parser(parser_path):
@@ -32,11 +33,27 @@ class Command(BaseCommand):
         """Run command."""
         parser = self.get_parser(options['parser'])
 
-        try:
-            payments = parser.parse(sys.stdin)
-        except BankAccount.DoesNotExist as e:
-            raise CommandError(e)
+        input_files = options['input_file']
+        if not input_files:
+            input_files = ['-']
 
+        for input_file in input_files:
+            if input_file == '-':
+                handle = sys.stdin
+            else:
+                handle = open(input_file)
+
+            try:
+                payments = parser.parse(handle)
+            except BankAccount.DoesNotExist as e:
+                raise CommandError(e)
+            else:
+                self.save_payments(payments, **options)
+            finally:
+                handle.close()
+
+    def save_payments(self, payments, **options):
+        """Save payments and related objects to database."""
         for payment_parts in payments:
             try:
                 with transaction.atomic():
