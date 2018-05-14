@@ -1,29 +1,13 @@
-"""Test parsers."""
+"""Test TransprocXMLParser."""
 from datetime import datetime
 from io import BytesIO
 
-from django.test import SimpleTestCase, TestCase
+from django.test import TestCase
 from djmoney.money import Money
 
 from django_pain.models import BankAccount, BankPayment
 from django_pain.models.symbols import PaymentSymbols
-from django_pain.parsers.czechslovak import CzechSlovakBankStatementParser
 from django_pain.parsers.transproc import TransprocXMLParser
-
-
-class DummyParser(CzechSlovakBankStatementParser):
-    """Dummy parser derived from abstract class."""
-
-    def parse(self, bank_statement):
-        """Just a dummy implementation, because DummyParser cannot be abstract."""
-
-
-class TestCzechSlovakBankStatementParser(SimpleTestCase):
-    """Test CzechSlovakBankStatementParser."""
-
-    def test_compose_account_number(self):
-        parser = DummyParser()
-        self.assertEqual(parser.compose_account_number('123456', '0300'), '123456/0300')
 
 
 class TestTransprocXMLParser(TestCase):
