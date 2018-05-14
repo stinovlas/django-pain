@@ -25,7 +25,8 @@ class TransprocXMLParser(CzechSlovakBankStatementParser):
 
     def parse(self, bank_statement):
         """Parse XML input."""
-        tree = etree.parse(bank_statement)
+        parser = etree.XMLParser(resolve_entities=False)
+        tree = etree.parse(bank_statement, parser)
 
         account_number = self.compose_account_number(tree.find('//*/account_number').text,
                                                      tree.find('//*/account_bank_code').text)
