@@ -58,7 +58,9 @@ class Command(BaseCommand):
                         rel.full_clean()
                         rel.save()
             except ValidationError as error:
-                for message in error.messages:
-                    self.stderr.write(self.style.WARNING(message))
+                if options['verbosity'] >= 1:
+                    for message in error.messages:
+                        self.stderr.write(self.style.WARNING(message))
             else:
-                self.stdout.write(self.style.SUCCESS('Payment ID %s has been imported.' % payment.identifier))
+                if options['verbosity'] >= 2:
+                    self.stdout.write(self.style.SUCCESS('Payment ID %s has been imported.' % payment.identifier))

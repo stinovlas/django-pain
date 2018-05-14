@@ -65,7 +65,8 @@ class TestImportPayments(TestCase):
     def test_import_payments(self):
         """Test import_payments command."""
         out = StringIO()
-        call_command('import_payments', 'django_pain.tests.test_commands.DummyPaymentsParser', '--no-color', stdout=out)
+        call_command('import_payments', 'django_pain.tests.test_commands.DummyPaymentsParser', '--no-color',
+                     '--verbosity=3', stdout=out)
 
         self.assertEqual(out.getvalue().strip().split('\n'), [
             'Payment ID PAYMENT_1 has been imported.',
@@ -90,7 +91,7 @@ class TestImportPayments(TestCase):
         """Test command for parser that returns payment related objects."""
         out = StringIO()
         call_command('import_payments', 'django_pain.tests.test_commands.DummyPaymentsSymbolsParser', '--no-color',
-                     stdout=out)
+                     '--verbosity=3', stdout=out)
 
         self.assertEqual(out.getvalue().strip(), 'Payment ID PAYMENT_1 has been imported.')
 
@@ -105,3 +106,15 @@ class TestImportPayments(TestCase):
             'Bank payment with this Payment ID and Account already exists.',
             'Bank payment with this Payment ID and Account already exists.',
         ])
+
+    def test_quiet_command(self):
+        """Test command call with verbosity set to 0."""
+        out = StringIO()
+        err = StringIO()
+        call_command('import_payments', 'django_pain.tests.test_commands.DummyPaymentsParser', '--no-color',
+                     '--verbosity=0', stdout=out, stderr=err)
+        call_command('import_payments', 'django_pain.tests.test_commands.DummyPaymentsParser', '--no-color',
+                     '--verbosity=0', stdout=out, stderr=err)
+
+        self.assertEqual(out.getvalue(), '')
+        self.assertEqual(err.getvalue(), '')
