@@ -7,7 +7,7 @@ transforming them into unified XML format.
 URL: https://github.com/CZ-NIC/fred-transproc
 """
 from datetime import datetime
-from typing import IO, Iterable, Tuple
+from typing import IO, Iterator, Tuple
 
 from djmoney.money import Money
 from lxml import etree
@@ -24,7 +24,7 @@ def none_to_str(value: str) -> str:
 class TransprocXMLParser(CzechSlovakBankStatementParser):
     """Transproc XML parser."""
 
-    def parse(self, bank_statement: IO[str]) -> Iterable[Tuple[BankPayment, PaymentSymbols]]:
+    def parse(self, bank_statement: IO[bytes]) -> Iterator[Tuple[BankPayment, PaymentSymbols]]:
         """Parse XML input."""
         parser = etree.XMLParser(resolve_entities=False)
         tree = etree.parse(bank_statement, parser)

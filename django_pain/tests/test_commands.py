@@ -136,3 +136,11 @@ class TestImportPayments(TestCase):
 
         self.assertEqual(out.getvalue(), '')
         self.assertEqual(err.getvalue(), '')
+
+    def test_invalid_parser(self):
+        """Test command call with invalid parser."""
+        with self.assertRaises(CommandError) as cm:
+            call_command('import_payments', '--parser=decimal.Decimal',
+                         '--no-color')
+
+        self.assertEqual(str(cm.exception), 'Parser argument has to be subclass of AbstractBankStatementParser.')

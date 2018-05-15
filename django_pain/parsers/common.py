@@ -6,12 +6,14 @@ from django.db.models import Model
 
 from django_pain.models import BankPayment
 
+BankStatementParserOutput = Union[Iterable[BankPayment], Iterable[Sequence[Model]]]
+
 
 class AbstractBankStatementParser(ABC):
     """Bank statement parser."""
 
     @abstractmethod
-    def parse(self, bank_statement: IO[str]) -> Union[Iterable[BankPayment], Iterable[Sequence[Model]]]:
+    def parse(self, bank_statement: IO) -> BankStatementParserOutput:
         """
         Parse bank statement.
 
