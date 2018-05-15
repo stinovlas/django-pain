@@ -2,10 +2,10 @@
 import sys
 from typing import Sequence
 
-import django.utils.module_loading as module_loading
 from django.core.exceptions import ValidationError
 from django.core.management.base import BaseCommand, CommandError
 from django.db import transaction
+from django.utils import module_loading
 
 from django_pain.models import BankAccount
 from django_pain.parsers.common import AbstractBankStatementParser, BankStatementParserOutput
