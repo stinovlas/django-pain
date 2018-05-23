@@ -11,6 +11,6 @@ class PaymentListView(TemplateView):
 
     def get_context_data(self, **kwargs):
         """Get context data."""
-        context = kwargs
+        context = super().get_context_data(**kwargs)
         context['payments'] = BankPayment.objects.all()
         return context
