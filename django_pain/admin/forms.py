@@ -29,7 +29,7 @@ class BankPaymentForm(forms.ModelForm):
     client_id = forms.CharField(label=_('Client ID'), required=False)
 
     def __init__(self, *args, **kwargs):
-        """Initialize form and disble most of the fields."""
+        """Initialize form and disable most of the fields."""
         super().__init__(*args, **kwargs)
         for key, value in self.fields.items():
             if key not in ('processor', 'client_id'):
