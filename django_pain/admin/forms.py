@@ -6,6 +6,8 @@ from djmoney.settings import CURRENCY_CHOICES
 
 from django_pain.constants import PaymentState
 from django_pain.models import BankAccount, BankPayment
+from django_pain.settings import SETTINGS
+from django_pain.utils import full_class_name
 
 
 class BankAccountForm(forms.ModelForm):
@@ -43,15 +45,19 @@ class BankPaymentForm(forms.ModelForm):
         """
         cleaned_data = super().clean()
         if cleaned_data['processor']:
-            processor_class = module_loading.import_string(cleaned_data['processor'])
-            processor = processor_class()
-            result = processor.assign_payment(self.instance, cleaned_data['client_id'])
-            if result.result:
-                cleaned_data['state'] = PaymentState.PROCESSED
-                cleaned_data['objective'] = result.objective
-                return cleaned_data
+            for processor_class in SETTINGS.processors:
+                if full_class_name(processor_class) == cleaned_data['processor']:
+                    processor = processor_class()
+                    result = processor.assign_payment(self.instance, cleaned_data['client_id'])
+                    if result.result:
+                        cleaned_data['state'] = PaymentState.PROCESSED
+                        cleaned_data['objective'] = result.objective
+                        return cleaned_data
+                    else:
+                        raise forms.ValidationError(_('Unable to assign payment'), code='unable_to_assign')
             else:
-                raise forms.ValidationError(_('Unable to assign payment'), code='unable_to_assign')
+                raise forms.ValidationError(_('Invalid payment processor'), code='invalid_processor')
+        return cleaned_data
 
     def save(self, commit=True):
         """Manually assign payment objective and save payment."""
