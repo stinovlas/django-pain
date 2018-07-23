@@ -7,6 +7,7 @@ from django.utils.translation import gettext_lazy as _
 from djmoney.models.fields import CurrencyField, MoneyField
 
 from django_pain.constants import CURRENCY_PRECISION, PaymentState
+from django_pain.settings import SETTINGS
 
 PAYMENT_STATE_CHOICES = (
     (PaymentState.IMPORTED, _('imported')),
@@ -61,3 +62,13 @@ class BankPayment(models.Model):
                 self.identifier, self.amount.currency.code, self.account.account_number, self.account.currency
             ))
         super().clean()
+
+    @classmethod
+    def objective_choices(self):
+        """Return payment processor default objectives choices."""
+        choices = [('', '----------')]
+        for proc_class in SETTINGS.processors:
+            full_name = "%s.%s" % (proc_class.__module__, proc_class.__qualname__)
+            proc = proc_class()
+            choices.append((full_name, proc.default_objective))
+        return choices
