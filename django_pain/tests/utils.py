@@ -16,7 +16,7 @@ class DummyPaymentProcessor(AbstractPaymentProcessor):
     def process_payments(self, payments):
         """Dummy function."""
 
-    def assign_payment(self, payment, client_id=None):
+    def assign_payment(self, payment, client_id):
         """Dummy function."""
 
 
