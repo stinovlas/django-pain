@@ -1,6 +1,5 @@
 """Django admin forms."""
 from django import forms
-from django.utils import module_loading
 from django.utils.translation import gettext as _
 from djmoney.settings import CURRENCY_CHOICES
 

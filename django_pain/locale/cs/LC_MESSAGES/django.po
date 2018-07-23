@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: django_pain 0.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-07-20 14:27+0000\n"
+"POT-Creation-Date: 2018-07-23 15:11+0000\n"
 "PO-Revision-Date: 2018-04-19 06:31-0500\n"
 "Last-Translator: Jan Musílek <jan.musilek@nic.cz>\n"
 "Language-Team: Czech <jan.musilek@nic.cz>\n"
@@ -44,6 +44,9 @@ msgstr "Čas vytvoření"
 
 msgid "Description"
 msgstr "Poznámka"
+
+msgid "Invalid payment processor"
+msgstr "Neplatný zpracovatel platby"
 
 msgid "Objective"
 msgstr "Účel"
