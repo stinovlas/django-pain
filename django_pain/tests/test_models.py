@@ -35,6 +35,6 @@ class TestBankPayment(SimpleTestCase):
     @override_settings(PAIN_PROCESSORS=['django_pain.tests.utils.DummyPaymentProcessor'])
     def test_objective_choices(self):
         self.assertEqual(BankPayment.objective_choices(), [
-            ('', '----------'),
+            ('', '---------'),
             ('django_pain.tests.utils.DummyPaymentProcessor', 'Dummy objective'),
         ])
