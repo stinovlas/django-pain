@@ -2,25 +2,10 @@
 from django import forms
 from django.utils import module_loading
 from django.utils.translation import gettext as _
-from djmoney.forms.fields import MoneyField
 from djmoney.settings import CURRENCY_CHOICES
 
 from django_pain.constants import PaymentState
 from django_pain.models import BankAccount, BankPayment
-
-
-class FixedMoneyField(MoneyField):
-    """
-    Fix MoneyField from django-money.
-
-    MoneyField is subclass of MultiValueField, which expects field value to be
-    instance of tuple or list. Money is neither, so we have to fix the clean
-    method and convert Money value to tuple.
-    """
-
-    def clean(self, value):
-        """Convert Money to tuple."""
-        return super().clean(value=(value.amount, value.currency))
 
 
 class BankAccountForm(forms.ModelForm):
@@ -41,7 +26,6 @@ class BankAccountForm(forms.ModelForm):
 class BankPaymentForm(forms.ModelForm):
     """Admin form for BankPayment model."""
 
-    amount = FixedMoneyField()
     client_id = forms.CharField(label=_('Client ID'), required=False)
 
     def __init__(self, *args, **kwargs):
