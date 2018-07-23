@@ -52,7 +52,8 @@ class BankPaymentAdmin(admin.ModelAdmin):
             fieldsets.append((_('Assign payment'), {'fields': ('objective',)}),)  # type: ignore
         return fieldsets
 
-    def account_name(self, obj):
+    @staticmethod
+    def account_name(obj):
         """Return related account name."""
         return obj.account.account_name
     account_name.short_description = _('Account name')  # type: ignore
